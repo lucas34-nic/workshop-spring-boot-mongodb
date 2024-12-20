@@ -1,6 +1,7 @@
 package com.lucas34.workshopmongo.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,8 @@ public class UserService {
 	}
 	
 	public User findById(String id) {
-		User user = repo.findOne(id);
-		if (user == null) {
-			throw new ObjectNotFoundException("Objeto não encontrado");
-		}
-		return user;
+		Optional<User> obj = repo.findById(id);
+		return obj.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
 	}
 	
 	public User insert(User obj) {
@@ -34,11 +32,11 @@ public class UserService {
 	
 	public void delete(String id) {
 		findById(id);
-		repo.delete(id);
+		repo.deleteById(id);
 	}
 	
 	public User update(User obj) {
-		User newObj = repo.findOne(obj.getId());
+		User newObj = findById(obj.getId());
 		updateData(newObj, obj);
 		return repo.save(newObj);
 	}
